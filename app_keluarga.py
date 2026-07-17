@@ -15,12 +15,18 @@ st.set_page_config(page_title="Jadwal Keluarga", page_icon="💖", layout="wide"
 # INISIALISASI KONEKSI FIREBASE (CLOUD DB)
 # ==========================================
 # Mencegah Firebase melakukan inisialisasi ulang yang bikin error
+import json
+# ... import lainnya ...
+
+# INISIALISASI KONEKSI FIREBASE DARI SECRETS
 if not firebase_admin._apps:
     try:
-        cred = credentials.Certificate('firebase_key.json')
+        # Mengambil JSON dari Streamlit Secrets
+        key_dict = json.loads(st.secrets["FIREBASE_JSON"])
+        cred = credentials.Certificate(key_dict)
         firebase_admin.initialize_app(cred)
     except Exception as e:
-        st.error(f"Gagal menyambung ke Firebase. Pastikan file firebase_key.json ada di folder yang sama. Error: {e}")
+        st.error(f"Gagal konek ke Firebase via Secrets: {e}")
         st.stop()
 
 db = firestore.client()
